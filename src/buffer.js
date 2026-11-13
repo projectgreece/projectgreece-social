@@ -83,9 +83,15 @@ function platformMetadata(platform, title) {
       : { tiktok: { title: title || "Project Greece" } };
 }
 
-export async function editPostText(id, text, platform, title) {
+export async function editPostText(id, text, platform, title, imageUrl) {
   const data = await gql(`mutation Edit($input: EditPostInput!) { editPost(input: $input) { ... on PostActionSuccess { post { id text dueAt channelId } } ... on MutationError { message } } }`, {
-    input: { id, text, aiAssisted: false, metadata: platformMetadata(platform, title) },
+    input: {
+      id,
+      text,
+      aiAssisted: false,
+      metadata: platformMetadata(platform, title),
+      assets: [{ image: { url: imageUrl } }],
+    },
   });
   const result = data.editPost;
   if (!result?.post) throw new Error(`Buffer editPost failed: ${result?.message || JSON.stringify(result)}`);
