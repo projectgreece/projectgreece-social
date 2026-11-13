@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { fetchEpisodes } from "./base44.js";
-import { getBufferContext, getScheduledPosts, createImagePost, editPostText } from "./buffer.js";
+import { getBufferContext, getScheduledPosts, createImagePost, editPostText, deletePost } from "./buffer.js";
 import { CONFIG, RELEASES } from "./config.js";
 import { renderPostImage } from "./graphics.js";
 import { planPosts } from "./planner.js";
@@ -63,16 +63,22 @@ async function main(){
  for(const post of posts)for(const platform of ["facebook","instagram","tiktok"]){
   const channel=buffer.channels[platform],existing=scheduledByOrg.get(channel.organizationId)||[],dueIso=post.dueAt.toUTC().toISO();
   const text=platformText(post,platform);
-  const sameSlot=existing.find(x=>x.channelId===channel.id&&Math.abs(Date.parse(x.dueAt)-Date.parse(dueIso))<1000);
+  const sameSlot=existing.filter(x=>x.channelId===channel.id&&Math.abs(Date.parse(x.dueAt)-Date.parse(dueIso))<1000);
 
-  if(sameSlot){
-    if(sameSlot.text===text){
-      console.log(`Skip duplicate ${platform} ${post.key}: ${sameSlot.id}`);
+  if(sameSlot.length){
+    let keep=sameSlot.find(x=>x.text===text)||sameSlot[0];
+    if(keep.text===text){
+      console.log(`Skip duplicate ${platform} ${post.key}: ${keep.id}`);
     }else{
       const existingImageUrl=`${process.env.R2_PUBLIC_BASE_URL.replace(/\/$/,"")}/${imageKey(post,platform)}`;
-      const edited=await editPostText(sameSlot.id,text,platform,post.episodes.length===1?post.episodes[0].title_el:"Project Greece",existingImageUrl);
+      const edited=await editPostText(keep.id,text,platform,post.episodes.length===1?post.episodes[0].title_el:"Project Greece",existingImageUrl);
       console.log(`Updated ${platform}: ${edited.id} @ ${edited.dueAt}`);
-      sameSlot.text=text;
+      keep.text=text;
+    }
+    for(const extra of sameSlot.filter(x=>x.id!==keep.id)){
+      await deletePost(extra.id);
+      console.log(`Deleted duplicate ${platform}: ${extra.id} @ ${extra.dueAt}`);
+      const idx=existing.findIndex(x=>x.id===extra.id); if(idx>=0) existing.splice(idx,1);
     }
     continue;
   }
