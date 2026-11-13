@@ -73,3 +73,13 @@ export async function createImagePost({ channel, text, dueAt, imageUrl, platform
   if (!result?.post) throw new Error(`Buffer createPost failed: ${result?.message || JSON.stringify(result)}`);
   return result.post;
 }
+
+
+export async function editPostText(id, text) {
+  const data = await gql(`mutation Edit($input: EditPostInput!) { editPost(input: $input) { ... on PostActionSuccess { post { id text dueAt channelId } } ... on MutationError { message } } }`, {
+    input: { id, text, aiAssisted: false },
+  });
+  const result = data.editPost;
+  if (!result?.post) throw new Error(`Buffer editPost failed: ${result?.message || JSON.stringify(result)}`);
+  return result.post;
+}
