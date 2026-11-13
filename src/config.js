@@ -8,28 +8,50 @@ export const CONFIG = {
     name: "ProjectGreece",
     seriesTitle: "Η Ιστορία της Ελλάδας, από το 1800 έως σήμερα",
     website: "ProjectGreece.gr",
-    colors: {
-      paper: "#f5f2eb",
-      ink: "#17201f",
-      teal: "#2f5d62",
-      tealDark: "#183f43",
-      terracotta: "#c55d3f",
-      white: "#fffdfa",
-    },
   },
   publishing: {
     timezone: "Europe/Athens",
     postHour: 10,
     postMinute: 0,
     lookaheadDays: 10,
-    evergreenStart: "2026-12-28",
-    activeFrom: "2026-11-16",
+    regularStart: "2026-11-16",
+    evergreenStart: "2027-01-04",
   },
   outputs: {
-    facebook: { width: 1200, height: 630 },
+    facebook: { width: 1080, height: 1350 },
     instagram: { width: 1080, height: 1350 },
     tiktok: { width: 1080, height: 1920 },
   },
+};
+
+export const SOCIAL_ASSETS = {
+  general: "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/48b5ca510_pg_social_gr_general.png",
+  monday: [
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/2cd0082d0_pg_social_gr_monday_01.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/fe16fd398_pg_social_gr_monday_02.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/7f9605fc3_pg_social_gr_monday_03.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/45402887c_pg_social_gr_monday_04.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/2caf3f9df_pg_social_gr_monday_05.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/28b7104e8_pg_social_gr_monday_06.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/ac0399e41_pg_social_gr_monday_07.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/fce684890_pg_social_gr_monday_08.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/6dda477eb_pg_social_gr_monday_09.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/85bce9cc1_pg_social_gr_monday_10.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/c5a9e203a_pg_social_gr_monday_11.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/b5470782c_pg_social_gr_monday_12.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/374c08603_pg_social_gr_monday_13.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/46e17aae8_pg_social_gr_monday_14.png",
+  ],
+  alter: [
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/36eb5c08c_pg_social_gr_alter_01.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/a4e77e427_pg_social_gr_alter_02.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/9f850f11e_pg_social_gr_alter_03.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/b0fae9ca8_pg_social_gr_alter_04.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/3c7bc0471_pg_social_gr_alter_05.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/03d3bbfb2_pg_social_gr_alter_06.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/f2f1a3eae_pg_social_gr_alter_07.png",
+    "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/335a9286a_pg_social_gr_alter_08.png",
+  ],
 };
 
 export const RELEASES = [
