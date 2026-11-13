@@ -38,7 +38,7 @@ export async function getBufferContext() {
   const channels = {};
   for (const service of wanted) {
     const candidates = all.filter((c) => String(c.service).toLowerCase() === service);
-    const preferred = candidates.find((c) => /project\s*greece/i.test(`${c.name || ""} ${c.displayName || ""}`)) || candidates[0];
+    const preferred = candidates.find((c) => /project\s*greece|projectgreeceglobal/i.test(`${c.name || ""} ${c.displayName || ""}`)) || candidates[0];
     if (!preferred) throw new Error(`No connected Buffer channel found for ${service}`);
     channels[service] = preferred;
   }
@@ -51,11 +51,11 @@ export async function getScheduledPosts(organizationId) {
 }
 
 export async function createImagePost({ channel, text, dueAt, imageUrl, platform, title }) {
-  const metadata = platform === "instagram"
-    ? { instagram: { type: "post", shouldShareToFeed: true, isAiGenerated: false } }
-    : platform === "tiktok"
-      ? { tiktok: { title: title || "Project Greece", isAiGenerated: false } }
-      : undefined;
+  const metadata = platform === "facebook"
+    ? { facebook: { type: "post" } }
+    : platform === "instagram"
+      ? { instagram: { type: "post", shouldShareToFeed: true, isAiGenerated: true } }
+      : { tiktok: { title: title || "Project Greece" } };
 
   const input = {
     text,
@@ -65,7 +65,7 @@ export async function createImagePost({ channel, text, dueAt, imageUrl, platform
     dueAt: dueAt.toUTC().toISO(),
     aiAssisted: false,
     assets: [{ image: { url: imageUrl } }],
-    ...(metadata ? { metadata } : {}),
+    metadata,
   };
 
   const data = await gql(`mutation Create($input: CreatePostInput!) { createPost(input: $input) { ... on PostActionSuccess { post { id text dueAt channelId assets { id mimeType } } } ... on MutationError { message } } }`, { input });
