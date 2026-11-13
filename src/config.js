@@ -1,0 +1,56 @@
+export const CONFIG = {
+  base44: {
+    appId: "6ab270b63831188bfcaa8a04",
+    origin: "https://projectgreece.gr",
+    seriesSlug: "history-of-greece",
+  },
+  brand: {
+    name: "ProjectGreece",
+    seriesTitle: "Η Ιστορία της Ελλάδας, από το 1800 έως σήμερα",
+    website: "ProjectGreece.gr",
+    colors: {
+      paper: "#f5f2eb",
+      ink: "#17201f",
+      teal: "#2f5d62",
+      tealDark: "#183f43",
+      terracotta: "#c55d3f",
+      white: "#fffdfa",
+    },
+  },
+  publishing: {
+    timezone: "Europe/Athens",
+    postHour: 10,
+    postMinute: 0,
+    lookaheadDays: 10,
+    evergreenStart: "2026-12-28",
+    activeFrom: "2026-11-16",
+  },
+  outputs: {
+    facebook: { width: 1200, height: 630 },
+    instagram: { width: 1080, height: 1350 },
+    tiktok: { width: 1080, height: 1920 },
+  },
+};
+
+export const RELEASES = [
+  { number: 1, at: "2026-10-29T14:49:23+02:00" },
+  { number: 2, at: "2026-11-01T06:00:00+02:00" },
+  { number: 3, at: "2026-11-07T06:00:00+02:00" },
+  { number: 4, at: "2026-11-08T06:00:00+02:00" },
+  { number: 5, at: "2026-11-14T06:00:00+02:00" },
+  { number: 6, at: "2026-11-15T06:00:00+02:00" },
+  { number: 7, at: "2026-11-21T06:00:00+02:00" },
+  { number: 8, at: "2026-11-22T06:00:00+02:00" },
+  { number: 9, at: "2026-11-28T06:00:00+02:00" },
+  { number: 10, at: "2026-11-29T06:00:00+02:00" },
+  { number: 11, at: "2026-12-05T06:00:00+02:00" },
+  { number: 12, at: "2026-12-06T06:00:00+02:00" },
+  { number: 13, at: "2026-12-12T06:00:00+02:00" },
+  { number: 14, at: "2026-12-13T06:00:00+02:00" },
+  { number: 15, at: "2026-12-19T06:00:00+02:00" },
+  { number: 16, at: "2026-12-20T06:00:00+02:00" },
+  { number: 17, at: "2026-12-26T06:00:00+02:00" },
+  { number: 18, at: "2026-12-26T06:00:00+02:00" },
+  { number: 19, at: "2026-12-27T06:00:00+02:00" },
+  { number: 20, at: "2026-12-27T06:00:00+02:00" },
+];
