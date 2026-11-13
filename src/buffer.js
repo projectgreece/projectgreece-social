@@ -75,9 +75,17 @@ export async function createImagePost({ channel, text, dueAt, imageUrl, platform
 }
 
 
-export async function editPostText(id, text) {
+function platformMetadata(platform, title) {
+  return platform === "facebook"
+    ? { facebook: { type: "post" } }
+    : platform === "instagram"
+      ? { instagram: { type: "post", shouldShareToFeed: true, isAiGenerated: true } }
+      : { tiktok: { title: title || "Project Greece" } };
+}
+
+export async function editPostText(id, text, platform, title) {
   const data = await gql(`mutation Edit($input: EditPostInput!) { editPost(input: $input) { ... on PostActionSuccess { post { id text dueAt channelId } } ... on MutationError { message } } }`, {
-    input: { id, text, aiAssisted: false },
+    input: { id, text, aiAssisted: false, metadata: platformMetadata(platform, title) },
   });
   const result = data.editPost;
   if (!result?.post) throw new Error(`Buffer editPost failed: ${result?.message || JSON.stringify(result)}`);
