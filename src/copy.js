@@ -1,38 +1,54 @@
 import { CONFIG } from "./config.js";
 
-const ordinal = (n) => `${n}ο`;
 const q = (text) => `«${text}»`;
+const ordinal = (n) => `${n}ο`;
+const dateLabel = (dt) => dt.toFormat("dd/LL");
 
-export function mondayCopy(items) {
-  if (items.mode === "evergreen") {
-    const e = items.episodes[0];
-    return `Από τη σειρά ${q(CONFIG.brand.seriesTitle)}.
+export function generalLaunchCopy() {
+  return `Τα 4 πρώτα επεισόδια της σειράς ${q(CONFIG.brand.seriesTitle)} είναι ήδη στον αέρα.
 
-Επεισόδιο ${String(e.number).padStart(2, "0")} — ${q(e.title_el)}
-
-Άκουσέ το όπου ακούς podcasts.`;
-  }
-  const lines = items.groups.flatMap((g) => g.episodes.map((e) => `${g.label} — ${q(e.title_el)}`));
-  return `Αυτή την εβδομάδα στο Project Greece.
-
-${lines.join("\n")}
-
-Νέα επεισόδια από τις 06:00, όπου ακούτε podcasts.`;
+Ακούστε τα στο ProjectGreece.gr και όπου ακούτε podcasts.`;
 }
 
-export function teaserCopy(dayLabel, episodes) {
+export function episodeTodayCopy(episode, dueAt) {
+  return `Σήμερα, ${dueAt.setLocale("el").toFormat("cccc")} ${dateLabel(dueAt)}, ακούστε το ${ordinal(episode.number)} επεισόδιο της σειράς ${q(CONFIG.brand.seriesTitle)}.
+
+${q(episode.title_el)}
+
+Διαθέσιμο από τις 06:00 στο ProjectGreece.gr και όπου ακούτε podcasts.`;
+}
+
+function titles(episodes) {
+  return episodes.map((e) => q(e.title_el)).join(episodes.length > 1 ? " και " : "");
+}
+
+export function mondayCopy(previous, next) {
+  return `Αυτό το σαββατοκύριακο ακούσαμε για ${titles(previous)}.
+
+Το επόμενο σαββατοκύριακο προχωράμε το ταξίδι μας με ${titles(next)}.
+
+Όλα τα επεισόδια στο ProjectGreece.gr και όπου ακούτε podcasts.`;
+}
+
+export function teaserCopy(kind, targetDate, episodes) {
+  const day = kind === "wednesday" ? "Αυτό το Σάββατο" : "Αυτή την Κυριακή";
   if (episodes.length === 1) {
     const e = episodes[0];
-    return `${dayLabel} στο Project Greece.
+    return `${day} ${dateLabel(targetDate)} ${kind === "wednesday" ? "ακούστε το νέο μας επεισόδιο" : `παρουσιάζουμε το ${ordinal(e.number)} επεισόδιο της σειράς μας`} ${q(e.title_el)}.
 
-${q(e.title_el)}
-
-Το ${ordinal(e.number)} επεισόδιο της σειράς ${q(CONFIG.brand.seriesTitle)} θα είναι διαθέσιμο από τις 06:00, όπου ακούτε podcasts.`;
+Το ταξίδι μας προχωράει. Όλα τα επεισόδια στο ProjectGreece.gr και όπου ακούτε podcasts.`;
   }
-  const episodeLines = episodes.map((e) => `Επεισόδιο ${String(e.number).padStart(2, "0")} — ${q(e.title_el)}`).join("\n");
-  return `${dayLabel} στο Project Greece.
+  return `${day} ${dateLabel(targetDate)} παρουσιάζουμε δύο νέα επεισόδια:
 
-${episodeLines}
+${episodes.map((e) => `Επεισόδιο ${String(e.number).padStart(2, "0")} — ${q(e.title_el)}`).join("\n")}
 
-Δύο νέα επεισόδια της σειράς ${q(CONFIG.brand.seriesTitle)}, διαθέσιμα από τις 06:00 όπου ακούτε podcasts.`;
+Όλα τα επεισόδια στο ProjectGreece.gr και όπου ακούτε podcasts.`;
+}
+
+export function evergreenCopy(episode) {
+  return `Ακούστε ξανά το επεισόδιο ${String(episode.number).padStart(2, "0")} — ${q(episode.title_el)}.
+
+Από τη σειρά ${q(CONFIG.brand.seriesTitle)}.
+
+Στο ProjectGreece.gr και όπου ακούτε podcasts.`;
 }
