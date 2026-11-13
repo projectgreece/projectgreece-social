@@ -69,7 +69,8 @@ async function main(){
     if(sameSlot.text===text){
       console.log(`Skip duplicate ${platform} ${post.key}: ${sameSlot.id}`);
     }else{
-      const edited=await editPostText(sameSlot.id,text,platform,post.episodes.length===1?post.episodes[0].title_el:"Project Greece");
+      const existingImageUrl=`${process.env.R2_PUBLIC_BASE_URL.replace(/\\/$/,"")}/${imageKey(post,platform)}`;
+      const edited=await editPostText(sameSlot.id,text,platform,post.episodes.length===1?post.episodes[0].title_el:"Project Greece",existingImageUrl);
       console.log(`Updated ${platform}: ${edited.id} @ ${edited.dueAt}`);
       sameSlot.text=text;
     }
