@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { fetchEpisodes } from "./base44.js";
-import { getBufferContext, getScheduledPosts, createImagePost } from "./buffer.js";
-import { CONFIG } from "./config.js";
+import { getBufferContext, getScheduledPosts, createImagePost, editPostText } from "./buffer.js";
+import { CONFIG, RELEASES } from "./config.js";
 import { renderPostImage } from "./graphics.js";
 import { planPosts } from "./planner.js";
 import { assertObject, uploadImage } from "./r2.js";
@@ -9,7 +9,31 @@ import { assertObject, uploadImage } from "./r2.js";
 const mode=process.env.MODE||"dry-run",zone=CONFIG.publishing.timezone;
 const slug=v=>String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const imageKey=(post,platform)=>`posts/${post.dueAt.toFormat("yyyy/LL")}/${post.key}/${platform}.jpg`;
+const spotifyIds=new Map(RELEASES.map(r=>[Number(r.number),r.spotifyId]).filter(([,id])=>id));
+
 async function publicOk(url){const r=await fetch(url,{method:"HEAD"});if(!r.ok)throw new Error(`Public media URL unreachable (${r.status}): ${url}`);}
+
+function spotifyUrlFor(post){
+  if(post.episodes.length===1){
+    const id=spotifyIds.get(Number(post.episodes[0].number));
+    if(id) return `https://open.spotify.com/episode/${id}`;
+  }
+  return CONFIG.brand.spotifyShowUrl;
+}
+
+function platformText(post,platform){
+  const spotify=spotifyUrlFor(post);
+  if(platform==="facebook"){
+    return `${post.text}
+
+Spotify: ${spotify}
+${CONFIG.brand.websiteUrl}`;
+  }
+  return `${post.text}
+
+Spotify και όλα τα επεισόδια: link στο bio.
+${CONFIG.brand.website}`;
+}
 
 async function main(){
  console.log(`Project Greece social publisher · mode=${mode}`);
@@ -38,10 +62,22 @@ async function main(){
  for(const org of buffer.organizations)scheduledByOrg.set(org.id,await getScheduledPosts(org.id));
  for(const post of posts)for(const platform of ["facebook","instagram","tiktok"]){
   const channel=buffer.channels[platform],existing=scheduledByOrg.get(channel.organizationId)||[],dueIso=post.dueAt.toUTC().toISO();
-  const dup=existing.find(x=>x.channelId===channel.id&&Math.abs(Date.parse(x.dueAt)-Date.parse(dueIso))<1000&&x.text===post.text);
-  if(dup){console.log(`Skip duplicate ${platform} ${post.key}: ${dup.id}`);continue;}
+  const text=platformText(post,platform);
+  const sameSlot=existing.find(x=>x.channelId===channel.id&&Math.abs(Date.parse(x.dueAt)-Date.parse(dueIso))<1000);
+
+  if(sameSlot){
+    if(sameSlot.text===text){
+      console.log(`Skip duplicate ${platform} ${post.key}: ${sameSlot.id}`);
+    }else{
+      const edited=await editPostText(sameSlot.id,text);
+      console.log(`Updated ${platform}: ${edited.id} @ ${edited.dueAt}`);
+      sameSlot.text=text;
+    }
+    continue;
+  }
+
   const image=await renderPostImage(post,platform),url=await uploadImage(imageKey(post,platform),image);await publicOk(url);
-  const created=await createImagePost({channel,text:post.text,dueAt:post.dueAt,imageUrl:url,platform,title:post.episodes.length===1?post.episodes[0].title_el:"Project Greece"});
+  const created=await createImagePost({channel,text,dueAt:post.dueAt,imageUrl:url,platform,title:post.episodes.length===1?post.episodes[0].title_el:"Project Greece"});
   console.log(`Scheduled ${platform}: ${created.id} @ ${created.dueAt}`);existing.push(created);
  }
 }
