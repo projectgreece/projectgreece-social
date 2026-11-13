@@ -46,7 +46,7 @@ export async function getBufferContext() {
 }
 
 export async function getScheduledPosts(organizationId) {
-  const data = await gql(`query { posts(input: { organizationId: ${JSON.stringify(organizationId)}, filter: { status: [scheduled] }, sort: [{ field: dueAt, direction: asc }] }) { edges { node { id text dueAt channelId } } pageInfo { hasNextPage endCursor } } }`);
+  const data = await gql(`query { posts(first: 100, input: { organizationId: ${JSON.stringify(organizationId)}, filter: { status: [scheduled] }, sort: [{ field: dueAt, direction: asc }] }) { edges { node { id text dueAt channelId } } pageInfo { hasNextPage endCursor } } }`);
   return (data.posts?.edges || []).map((e) => e.node);
 }
 
@@ -96,4 +96,14 @@ export async function editPostText(id, text, platform, title, imageUrl) {
   const result = data.editPost;
   if (!result?.post) throw new Error(`Buffer editPost failed: ${result?.message || JSON.stringify(result)}`);
   return result.post;
+}
+
+
+export async function deletePost(id) {
+  const data = await gql(`mutation Delete($input: DeletePostInput!) { deletePost(input: $input) { ... on DeletePostSuccess { id } ... on VoidMutationError { message } } }`, {
+    input: { id },
+  });
+  const result = data.deletePost;
+  if (!result?.id) throw new Error(`Buffer deletePost failed: ${result?.message || JSON.stringify(result)}`);
+  return result.id;
 }
