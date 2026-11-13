@@ -1,0 +1,20 @@
+{
+  "name": "projectgreece-social",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/run.js && node --check src/planner.js && node --check src/graphics.js && node --check src/buffer.js && node --check src/r2.js",
+    "dry-run": "MODE=dry-run node src/run.js",
+    "integration-test": "MODE=integration-test node src/run.js",
+    "publish": "MODE=publish node src/run.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1166.0",
+    "luxon": "^3.7.2",
+    "sharp": "^0.35.5"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
