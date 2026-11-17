@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { CONFIG, RELEASES } from "./config.js";
-import { generalLaunchCopy, episodeTodayCopy, mondayCopy, teaserCopy, evergreenCopy } from "./copy.js";
+import { generalLaunchCopy, episodeTodayCopy, mondayCopy, teaserCopy, evergreenCopy, repostEpisodeCopy } from "./copy.js";
 
 const zone = CONFIG.publishing.timezone;
 const releaseMap = new Map(RELEASES.map((r) => [r.number, DateTime.fromISO(r.at, { setZone: true }).setZone(zone)]));
@@ -22,6 +22,7 @@ function specialPosts(episodes) {
   const d13 = DateTime.fromISO("2026-11-13", { zone });
   const d14 = DateTime.fromISO("2026-11-14", { zone });
   const d15 = DateTime.fromISO("2026-11-15", { zone });
+  const d17 = DateTime.fromISO("2026-11-17", { zone });
   const ep5 = episodeByNumber(episodes, 5), ep6 = episodeByNumber(episodes, 6);
   return [
     {
@@ -44,6 +45,22 @@ function specialPosts(episodes) {
       dueAt: atTime(d15),
       episodes: [ep6],
       text: episodeTodayCopy(ep6, atTime(d15)),
+    },
+    {
+      key: key("repost", atTime(d17, 12, 30), [ep5]),
+      kind: "repost",
+      dueAt: atTime(d17, 12, 30),
+      episodes: [ep5],
+      fixedImageUrl: "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/eb677bd75_a_polished_vintage_themed_poster_in_portrait_4_5_r_1.png",
+      text: repostEpisodeCopy(ep5),
+    },
+    {
+      key: key("repost", atTime(d17, 18, 30), [ep6]),
+      kind: "repost",
+      dueAt: atTime(d17, 18, 30),
+      episodes: [ep6],
+      fixedImageUrl: "https://media.base44.com/images/public/6ab270b63831188bfcaa8a04/5274f5b21_a_vintage_sepia_toned_professionally_designed_po_2.png",
+      text: repostEpisodeCopy(ep6),
     },
   ];
 }
