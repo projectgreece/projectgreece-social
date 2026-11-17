@@ -120,6 +120,12 @@ async function withEpisodeImages(baseBuffer, post, width, height, platform) {
 
 export async function renderPostImage(post, platform) {
   const { width, height } = CONFIG.outputs[platform];
+
+  if (post.fixedImageUrl) {
+    const fixed = await brandedCanvas(post.fixedImageUrl, width, height);
+    return sharp(fixed).jpeg({ quality: 93 }).toBuffer();
+  }
+
   const base = await brandedCanvas(backgroundUrlFor(post), width, height);
 
   if (["episode-today", "wednesday", "friday"].includes(post.kind)) {
