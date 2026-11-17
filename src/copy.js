@@ -52,3 +52,12 @@ export function evergreenCopy(episode) {
 
 Στο ProjectGreece.gr και όπου ακούτε podcasts.`;
 }
+
+
+export function repostEpisodeCopy(episode) {
+  return `Ακούστε το ${ordinal(episode.number)} επεισόδιο της σειράς ${q(CONFIG.brand.seriesTitle)}.
+
+${q(episode.title_el)}
+
+Στο ProjectGreece.gr και όπου ακούτε podcasts.`;
+}
