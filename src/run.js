@@ -7,8 +7,10 @@ import { planPosts } from "./planner.js";
 import { assertObject, uploadImage } from "./r2.js";
 
 const mode=process.env.MODE||"dry-run",zone=CONFIG.publishing.timezone;
+const forceMediaRefresh=process.env.FORCE_MEDIA_REFRESH==="1";
+const MEDIA_VERSION="v2-contain-rotation";
 const slug=v=>String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-const imageKey=(post,platform)=>`posts/${post.dueAt.toFormat("yyyy/LL")}/${post.key}/${platform}.jpg`;
+const imageKey=(post,platform)=>`posts/${post.dueAt.toFormat("yyyy/LL")}/${post.key}/${MEDIA_VERSION}/${platform}.jpg`;
 const spotifyIds=new Map(RELEASES.map(r=>[Number(r.number),r.spotifyId]).filter(([,id])=>id));
 
 async function publicOk(url){const r=await fetch(url,{method:"HEAD"});if(!r.ok)throw new Error(`Public media URL unreachable (${r.status}): ${url}`);}
@@ -67,13 +69,22 @@ async function main(){
 
   if(sameSlot.length){
     let keep=sameSlot.find(x=>x.text===text)||sameSlot[0];
-    if(keep.text===text){
-      console.log(`Skip duplicate ${platform} ${post.key}: ${keep.id}`);
-    }else{
-      const existingImageUrl=`${process.env.R2_PUBLIC_BASE_URL.replace(/\/$/,"")}/${imageKey(post,platform)}`;
-      const edited=await editPostText(keep.id,text,platform,post.episodes.length===1?post.episodes[0].title_el:"Project Greece",existingImageUrl);
-      console.log(`Updated ${platform}: ${edited.id} @ ${edited.dueAt}`);
+
+    if(forceMediaRefresh || keep.text!==text){
+      const image=await renderPostImage(post,platform);
+      const mediaUrl=await uploadImage(imageKey(post,platform),image);
+      await publicOk(mediaUrl);
+      const edited=await editPostText(
+        keep.id,
+        text,
+        platform,
+        post.episodes.length===1?post.episodes[0].title_el:"Project Greece",
+        mediaUrl
+      );
+      console.log(`Updated ${platform}: ${edited.id} @ ${edited.dueAt}${forceMediaRefresh?" · media refreshed":""}`);
       keep.text=text;
+    }else{
+      console.log(`Skip duplicate ${platform} ${post.key}: ${keep.id}`);
     }
     for(const extra of sameSlot.filter(x=>x.id!==keep.id)){
       await deletePost(extra.id);
